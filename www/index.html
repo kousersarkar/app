@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Compound Interest Calculator</title>
+<script src="chart.umd.js"></script>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f6f4;--card:#fff;--bd:#dcdcd8;--tx:#333;--mut:#777;--green:#4a9a1f;--orange:#e67e22;--slate:#333;--soft:#f0f0ec;--inp:#fff;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1c1e;--card:#25272a;--bd:#3a3d41;--tx:#e8e8e6;--mut:#9a9d a0;--mut:#9a9da0;--green:#7bc74d;--orange:#f0953f;--slate:#ddd;--soft:#2f3236;--inp:#1f2123;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1b1c1e;--card:#25272a;--bd:#3a3d41;--tx:#e8e8e6;--mut:#9a9da0;--green:#7bc74d;--orange:#f0953f;--slate:#ddd;--soft:#2f3236;--inp:#1f2123;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Inter,Roboto,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.45}
+.wrap{max-width:1160px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.6rem;margin:6px 0 4px;color:var(--slate)}
+.sub{color:var(--mut);margin:0 0 18px}
+.grid{display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.tabs{display:flex;background:var(--slate);overflow-x:auto}
+.tabs button{flex:1;white-space:nowrap;padding:12px 10px;background:none;border:0;color:#bbb;font:600 13px inherit;font-family:inherit;cursor:pointer;border-bottom:3px solid transparent}
+.tabs button.on{color:#fff;border-bottom-color:var(--green);background:rgba(255,255,255,.08)}
+.form{padding:16px}
+label.l{display:block;font-weight:600;font-size:13px;margin:14px 0 6px}
+.form>label.l:first-child{margin-top:0}
+.seg{display:flex;border:1px solid var(--bd);border-radius:7px;overflow:hidden}
+.seg button{flex:1;padding:8px 4px;border:0;border-right:1px solid var(--bd);background:var(--inp);color:var(--tx);font:500 14px inherit;font-family:inherit;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--slate);color:var(--card)}
+.row{display:flex;gap:8px}
+.f{position:relative;flex:1}
+.f span.p{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--mut)}
+input,select{width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:7px;background:var(--inp);color:var(--tx);font:inherit;font-size:15px}
+.f input.pre{padding-left:26px}
+input:focus,select:focus{outline:2px solid var(--green);outline-offset:-1px}
+.sm{font-size:12px;color:var(--mut);margin-top:4px}
+.calc{width:100%;margin-top:18px;padding:13px;border:0;border-radius:8px;background:var(--green);color:#fff;font:700 16px inherit;font-family:inherit;cursor:pointer}
+.calc:hover{filter:brightness(1.08)}
+.hide{display:none!important}
+.head{padding:18px 20px;border-bottom:1px solid var(--bd)}
+.head h2{margin:0 0 12px;font-size:1.05rem;color:var(--slate)}
+.big{display:flex;flex-wrap:wrap;gap:20px 36px;align-items:flex-end}
+.big small{display:block;color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.fv{font-size:2.1rem;font-weight:700;color:var(--green);line-height:1.1}
+.ti{font-size:1.5rem;font-weight:700;color:var(--orange)}
+.ib{font-size:1.2rem;font-weight:600}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.badge{background:var(--soft);border:1px solid var(--bd);border-radius:20px;padding:5px 12px;font-size:12.5px}
+.badge b{color:var(--slate)}
+.bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--bd)}
+.bar .seg{min-width:0}.bar .seg button{padding:7px 14px}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.tools button{padding:7px 12px;border:1px solid var(--bd);background:var(--inp);color:var(--tx);border-radius:7px;font:500 13px inherit;font-family:inherit;cursor:pointer}
+.tools button:hover{background:var(--soft)}
+.view{padding:0 0 4px}
+.scroll{overflow-x:auto;max-height:480px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:9px 14px;text-align:right;border-bottom:1px solid var(--bd);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{position:sticky;top:0;background:var(--slate);color:var(--card);font-weight:600;font-size:13px}
+td.i{color:var(--orange);font-weight:500}td.a{color:var(--mut)}td.e{color:var(--green);font-weight:600}
+tbody tr:nth-child(even){background:var(--soft)}
+.chartbox{padding:16px 20px;height:400px}
+.sum{padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.sum div{background:var(--soft);border:1px solid var(--bd);border-radius:8px;padding:12px 14px}
+.sum small{color:var(--mut);display:block;font-size:12px}.sum b{font-size:1.15rem}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--slate);color:var(--card);padding:9px 16px;border-radius:8px;opacity:0;transition:.25s;pointer-events:none}
+.toast.on{opacity:1}
+@media (max-width:768px){.grid{grid-template-columns:1fr}.fv{font-size:1.8rem}.chartbox{height:320px}}
+@media print{.form-card,.tabs,.tools,.bar .seg{display:none!important}.grid{display:block}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Compound Interest Calculator</h1>
+<p class="sub">Model growth with daily, monthly or yearly compounding, regular deposits and withdrawals.</p>
+<div class="grid">
+<div class="card form-card">
+<div class="tabs" id="tabs">
+<button data-m="compound" class="on">Compound Interest</button><button data-m="simple">Simple Interest</button><button data-m="daily">Daily Compound</button><button data-m="forex">Forex Compound</button>
+</div>
+<div class="form">
+<label class="l">Currency</label>
+<div class="seg" id="cur"><button data-c="$" class="on">$</button><button data-c="€">€</button><button data-c="£">£</button><button data-c="₹">₹</button><button data-c="¥">¥</button></div>
+
+<label class="l" for="init">Initial investment</label>
+<div class="f"><span class="p" id="sym1">$</span><input class="pre" id="init" type="number" min="0" step="any" value="5000"></div>
+
+<label class="l" for="rate">Interest rate</label>
+<div class="row"><div class="f"><input id="rate" type="number" min="0" step="any" value="5"></div>
+<select id="per" style="max-width:130px"><option value="annual">% annual</option><option value="monthly">% monthly</option></select></div>
+
+<div id="freqBox"><label class="l" for="freq">Compound frequency</label>
+<select id="freq"><option value="365">Daily (365/yr)</option><option value="12" selected>Monthly (12/yr)</option><option value="4">Quarterly (4/yr)</option><option value="2">Semi-annually (2/yr)</option><option value="1">Annually (1/yr)</option></select></div>
+
+<label class="l">Investment duration</label>
+<div class="row"><div class="f"><input id="yrs" type="number" min="0" step="1" value="5"><div class="sm">Years</div></div>
+<div class="f"><input id="mos" type="number" min="0" max="11" step="1" value="0"><div class="sm">Months</div></div></div>
+
+<label class="l">Regular contributions (optional)</label>
+<div class="seg" id="mode"><button data-k="none" class="on">None</button><button data-k="dep">Deposits</button><button data-k="wd">Withdrawals</button><button data-k="both">Both</button></div>
+
+<div id="depBox" class="hide"><label class="l">Deposit amount</label>
+<div class="row"><div class="f"><span class="p sym">$</span><input class="pre" id="dep" type="number" min="0" step="any" value="200"></div>
+<select id="depF" style="max-width:120px"><option value="12">monthly</option><option value="1">annually</option></select></div></div>
+<div id="wdBox" class="hide"><label class="l">Withdrawal amount</label>
+<div class="row"><div class="f"><span class="p sym">$</span><input class="pre" id="wd" type="number" min="0" step="any" value="100"></div>
+<select id="wdF" style="max-width:120px"><option value="12">monthly</option><option value="1">annually</option></select></div></div>
+<div id="incBox" class="hide"><label class="l">Annual increase (inflation / growth)</label>
+<div class="seg" id="incT" style="margin-bottom:8px"><button data-t="pct" class="on">%</button><button data-t="amt" id="incAmt">$</button></div>
+<div class="f"><input id="inc" type="number" min="0" step="any" value="0"></div>
+<div class="sm">Applied to contributions at the start of each year.</div></div>
+
+<button class="calc" id="go">Calculate</button>
+</div></div>
+
+<div class="card" id="res">
+<div class="head"><h2 id="title"></h2>
+<div class="big"><div><small>Future investment value</small><div class="fv" id="fv"></div></div>
+<div><small>Total interest earned</small><div class="ti" id="ti"></div></div>
+<div><small>Initial balance</small><div class="ib" id="ib"></div></div></div>
+<div class="badges" id="badges"></div></div>
+<div class="bar"><div class="seg" id="bk"><button data-b="monthly">Monthly</button><button data-b="yearly" class="on">Yearly</button></div>
+<div class="seg" id="vw"><button data-v="table" class="on" title="Table view">▤ Table</button><button data-v="chart" title="Chart view">📈 Chart</button><button data-v="summary" title="Summary view">☰ Summary</button></div></div>
+<div class="view" id="vTable"><div class="scroll"><table><thead><tr><th id="thP">Year</th><th>Interest Earned</th><th>Accrued Interest</th><th>Ending Balance</th></tr></thead><tbody id="tb"></tbody></table></div></div>
+<div class="view hide" id="vChart"><div class="chartbox"><canvas id="cv"></canvas></div></div>
+<div class="view hide" id="vSum"><div class="sum" id="sum"></div></div>
+<div class="bar" style="border-top:1px solid var(--bd);border-bottom:0"><span class="sm" style="margin:0">Results update as you type.</span>
+<div class="tools"><button id="cpy">Copy results</button><button id="prt">Print</button><button id="shr">Share link</button></div></div>
+</div>
+</div></div>
+<div class="toast" id="toast"></div>
+<script>
+const $=id=>document.getElementById(id);
+const S={mode:'compound',cur:'$',k:'none',inc:'pct',b:'yearly',v:'table'};
+let R=null,chart=null;
+const num=id=>{const v=parseFloat($(id).value);return isFinite(v)&&v>0?v:0};
+const fmt=n=>{const d=S.cur==='¥'?0:2;return S.cur+(n<0?'-':'')+Math.abs(n).toLocaleString(S.cur==='₹'?'en-IN':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d})};
+const pct=n=>(+n.toFixed(2))+'%';
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+function seg(id,attr,cb){$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$(id).children].forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset[attr]);})}
+
+function calc(){
+  const P=num('init');let rate=num('rate');
+  const monthlyRate=$('per').value==='monthly';
+  const nominal=(monthlyRate?rate*12:rate)/100;
+  const n=(S.mode==='daily'||S.mode==='forex')?365:+$('freq').value;
+  const months=Math.max(0,Math.round(num('yrs'))*12+Math.round(num('mos')));
+  const useDep=S.k==='dep'||S.k==='both',useWd=S.k==='wd'||S.k==='both';
+  let dep=useDep?num('dep'):0,wd=useWd?num('wd'):0;
+  const depF=+$('depF').value,wdF=+$('wdF').value,inc=num('inc');
+  const simple=S.mode==='simple';
+  const mr=simple?nominal/12:Math.pow(1+nominal/n,n/12)-1;
+  let bal=P,accrued=0,net=P,contrib=0,pending=0;
+  const rows=[{m:0,int:0,acc:0,bal:P,inv:P}];
+  for(let m=1;m<=months;m++){
+    if(m>1&&(m-1)%12===0&&inc>0){ if(S.inc==='pct'){dep*=1+inc/100;wd*=1+inc/100}else{if(dep)dep+=inc;if(wd)wd+=inc} }
+    const base=simple?net:bal;
+    const i=base*mr;
+    if(simple){pending+=i}else{bal+=i}
+    accrued+=i;
+    let c=0;
+    if(dep&&(depF===12||m%12===0))c+=dep;
+    if(wd&&(wdF===12||m%12===0))c-=wd;
+    if(c<0&&-c>(simple?net+pending:bal))c=-(simple?net+pending:bal);
+    if(simple)net+=c;else bal+=c;
+    contrib+=c;if(!simple)net+=c;
+    const total=simple?net+pending:bal;
+    rows.push({m,int:i,acc:accrued,bal:total,inv:P+contrib});
+  }
+  const end=rows[rows.length-1];
+  const ear=simple?nominal:Math.pow(1+nominal/n,n)-1;
+  const invested=P+contrib;
+  const ror=invested>0?(end.bal-invested)/invested*100:0;
+  let dbl='—';
+  if(nominal>0){const y=simple?1/nominal:Math.log(2)/Math.log(1+ear);dbl=fmtYears(y)}
+  const r72=nominal>0?72/(nominal*100):null;
+  R={rows,months,P,end,ear,nominal,ror,dbl,r72,contrib,n,simple};
+  render();
+}
+function fmtYears(y){const m=Math.round(y*12);if(m>=1200)return '100+ years';const a=Math.floor(m/12),b=m%12;return (a?a+' yr ':'')+(b?b+' mo':'')||'< 1 mo'}
+function agg(){
+  const out=[];const r=R.rows;
+  if(S.b==='monthly'){for(let i=1;i<r.length;i++)out.push({l:i,int:r[i].int,acc:r[i].acc,bal:r[i].bal,inv:r[i].inv});}
+  else{for(let y=1;y<=Math.ceil(R.months/12);y++){const a=(y-1)*12,b=Math.min(y*12,R.months);out.push({l:y,int:r[b].acc-r[a].acc,acc:r[b].acc,bal:r[b].bal,inv:r[b].inv});}}
+  return out;
+}
+function render(){
+  const y=R.months/12,yy=Math.floor(R.months/12),mm=R.months%12;
+  $('title').textContent='Interest calculation for '+(yy?yy+(yy===1?' year':' years'):'')+(yy&&mm?' and ':'')+(mm?mm+(mm===1?' month':' months'):'')+(!R.months?'0 years':'');
+  $('fv').textContent=fmt(R.end.bal);$('ti').textContent=fmt(R.end.acc);$('ib').textContent=fmt(R.P);
+  const nomTxt=pct(R.nominal*100),earTxt=pct(R.ear*100);
+  $('badges').innerHTML=
+   `<span class="badge">${R.simple?'Simple rate':'Effective rate'}: <b>${nomTxt} → ${earTxt}</b></span>`+
+   `<span class="badge">Rate of return: <b>${pct(R.ror)}</b></span>`+
+   `<span class="badge">Time to double: <b>${R.dbl}</b>${R.r72?` <span style="color:var(--mut)">(Rule of 72: ${fmtYears(R.r72)})</span>`:''}</span>`+
+   `<span class="badge">Net contributions: <b>${fmt(R.contrib)}</b></span>`;
+  const d=agg();
+  $('thP').textContent=S.b==='monthly'?'Month':'Year';
+  $('tb').innerHTML=d.map(x=>`<tr><td>${x.l}</td><td class="i">${fmt(x.int)}</td><td class="a">${fmt(x.acc)}</td><td class="e">${fmt(x.bal)}</td></tr>`).join('')||'<tr><td colspan="4">Enter a duration to see results.</td></tr>';
+  $('sum').innerHTML=[['Future value',fmt(R.end.bal)],['Initial deposit',fmt(R.P)],['Net contributions',fmt(R.contrib)],['Total invested',fmt(R.P+R.contrib)],['Interest earned',fmt(R.end.acc)],['Interest share of balance',R.end.bal>0?pct(R.end.acc/R.end.bal*100):'0%'],['Compounding',R.simple?'None (simple)':R.n+' times / year'],['Average yearly interest',y>0?fmt(R.end.acc/y):fmt(0)]].map(([a,b])=>`<div><small>${a}</small><b>${b}</b></div>`).join('');
+  if(S.v==='chart')drawChart();
+}
+function drawChart(){
+  if(typeof Chart==='undefined')return;
+  const cs=getComputedStyle(document.documentElement);
+  const g=cs.getPropertyValue('--green').trim(),o=cs.getPropertyValue('--orange').trim(),tx=cs.getPropertyValue('--tx').trim(),bd=cs.getPropertyValue('--bd').trim();
+  const r=R.rows,ys=[];for(let y=0;y<=Math.ceil(R.months/12);y++)ys.push(Math.min(y*12,R.months));
+  const labels=ys.map((m,i)=>'Yr '+i);
+  const init=ys.map(()=>R.P),con=ys.map(m=>r[m].inv-R.P),int=ys.map(m=>r[m].acc);
+  if(chart)chart.destroy();
+  chart=new Chart($('cv'),{type:'bar',data:{labels,datasets:[
+    {label:'Initial deposit',data:init,backgroundColor:'#7a8794',stack:'s'},
+    {label:'Contributions',data:con,backgroundColor:g,stack:'s'},
+    {label:'Interest earned',data:int,backgroundColor:o,stack:'s'},
+    {type:'line',label:'Balance',data:ys.map(m=>r[m].bal),borderColor:tx,backgroundColor:tx,tension:.25,pointRadius:2}]},
+   options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    scales:{x:{stacked:true,ticks:{color:tx},grid:{color:bd}},y:{stacked:true,ticks:{color:tx,callback:v=>S.cur+Intl.NumberFormat('en',{notation:'compact'}).format(v)},grid:{color:bd}}},
+    plugins:{legend:{labels:{color:tx}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}}}});
+}
+function setMode(m){
+  S.mode=m;
+  [...$('tabs').children].forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  $('freqBox').classList.toggle('hide',m==='simple'||m==='daily'||m==='forex');
+  if(m==='forex'){$('per').value='monthly';$('rate').value=$('rate').value>=20?1:Math.min(+$('rate').value,10)}
+  calc();
+}
+function updateContrib(){
+  const d=S.k==='dep'||S.k==='both',w=S.k==='wd'||S.k==='both';
+  $('depBox').classList.toggle('hide',!d);$('wdBox').classList.toggle('hide',!w);$('incBox').classList.toggle('hide',!(d||w));
+}
+function setCur(c){S.cur=c;$('sym1').textContent=c;document.querySelectorAll('.sym').forEach(e=>e.textContent=c);$('incAmt').textContent=c}
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setMode(b.dataset.m)});
+seg('cur','c',c=>{setCur(c);calc()});
+seg('mode','k',k=>{S.k=k;updateContrib();calc()});
+seg('incT','t',t=>{S.inc=t;calc()});
+seg('bk','b',b=>{S.b=b;render()});
+seg('vw','v',v=>{S.v=v;$('vTable').classList.toggle('hide',v!=='table');$('vChart').classList.toggle('hide',v!=='chart');$('vSum').classList.toggle('hide',v!=='summary');if(v==='chart')drawChart()});
+document.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',calc));
+$('go').onclick=()=>{calc();if(innerWidth<=768)$('res').scrollIntoView({behavior:'smooth'})};
+const ids=['init','rate','per','freq','yrs','mos','dep','depF','wd','wdF','inc'];
+function link(){const p=new URLSearchParams();ids.forEach(i=>p.set(i,$(i).value));['mode','cur','k','inc'].forEach(k=>p.set('s_'+k,S[k]));return location.href.split('#')[0]+'#'+p}
+function text(){return `Compound interest results\nInitial: ${fmt(R.P)}\nFuture value: ${fmt(R.end.bal)}\nInterest earned: ${fmt(R.end.acc)}\nEffective rate: ${pct(R.nominal*100)} → ${pct(R.ear*100)}\nRate of return: ${pct(R.ror)}\nTime to double: ${R.dbl}`}
+async function copy(t,m){try{await navigator.clipboard.writeText(t);toast(m)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast(m)}catch(_){toast('Copy not available')}a.remove()}}
+$('cpy').onclick=()=>copy(text(),'Results copied');
+$('shr').onclick=async()=>{const u=link();if(navigator.share){try{await navigator.share({title:'Compound Interest Calculator',url:u});return}catch(e){}}copy(u,'Link copied')};
+$('prt').onclick=()=>window.print();
+(function init(){
+  try{const p=new URLSearchParams(location.hash.slice(1));
+    if(p.has('init')){ids.forEach(i=>{if(p.has(i))$(i).value=p.get(i)});
+      S.k=p.get('s_k')||'none';S.inc=p.get('s_inc')||'pct';S.cur=p.get('s_cur')||'$';S.mode=p.get('s_mode')||'compound';
+      [['mode','k'],['cur','c'],['incT','t']].forEach(([id,a])=>{const v=id==='mode'?S.k:id==='cur'?S.cur:S.inc;[...$(id).children].forEach(b=>b.classList.toggle('on',b.dataset[a]===v))});
+      setCur(S.cur);updateContrib();
+      [...$('tabs').children].forEach(b=>b.classList.toggle('on',b.dataset.m===S.mode));
+      $('freqBox').classList.toggle('hide',['simple','daily','forex'].includes(S.mode));}
+  }catch(e){}
+  calc();
+})();
+</script>
+</body>
+</html>
